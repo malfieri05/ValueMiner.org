@@ -1,0 +1,56 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String     @id @default(cuid())
+  email        String     @unique
+  passwordHash String
+  name         String?
+  categories   Category[]
+  clips        Clip[]
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+}
+
+model Category {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  clips     Clip[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, slug])
+}
+
+model Clip {
+  id           String     @id @default(cuid())
+  youtubeId    String
+  youtubeUrl   String
+  title        String?
+  thumbnailUrl String?
+  transcript   String?
+  summary      String?
+  actionSteps  String?
+  status       String     @default("PENDING")
+  category     Category?  @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  categoryId   String?
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId       String
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  @@index([youtubeId, userId])
+  @@unique([youtubeId, userId])
+}
