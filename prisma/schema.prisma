@@ -2,12 +2,14 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["multiSchema"]
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  schemas  = ["app"]
 }
 
 model User {
@@ -19,6 +21,8 @@ model User {
   clips        Clip[]
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
+
+  @@schema("app")
 }
 
 model Category {
@@ -32,6 +36,7 @@ model Category {
   updatedAt DateTime @updatedAt
 
   @@unique([userId, slug])
+  @@schema("app")
 }
 
 model Clip {
@@ -53,4 +58,5 @@ model Clip {
 
   @@index([youtubeId, userId])
   @@unique([youtubeId, userId])
+  @@schema("app")
 }
