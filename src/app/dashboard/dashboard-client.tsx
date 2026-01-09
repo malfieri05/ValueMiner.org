@@ -133,29 +133,18 @@ const ActionPlan = ({ steps }: { steps: string[] }) => (
   </div>
 );
 
-const makeShortTitle = (title?: string | null) => {
-  const pickWords = (text: string, count = 3) =>
-    text
-      .replace(/\s+/g, " ")
-      .trim()
-      .split(" ")
-      .slice(0, count)
-      .join(" ");
-
-  if (title && title.trim().length > 0) return pickWords(title, 3);
-  return "Short";
-};
-
 const ClipCard = ({
   clip,
   onOpen,
   onChangeCategory,
   categories,
+  displayIndex,
 }: {
   clip: Clip;
   onOpen: (clip: Clip) => void;
   onChangeCategory: (clipId: string, categoryId: string | null) => void;
   categories: Category[];
+  displayIndex: number;
 }) => {
   const steps = useMemo(() => {
     if (Array.isArray(clip.actionSteps)) {
@@ -171,7 +160,7 @@ const ClipCard = ({
     setMenuOpen(false);
   };
 
-  const title = makeShortTitle(clip.title);
+  const title = String(displayIndex);
 
   return (
     <div
@@ -563,12 +552,13 @@ export default function DashboardClient() {
           </div>
         ) : (
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            {clips.map((clip) => (
+            {clips.map((clip, index) => (
               <ClipCard
                 key={clip.id}
                 clip={clip}
                 categories={categories}
                 onOpen={setSelectedClip}
+                displayIndex={index + 1}
                 onChangeCategory={async (clipId, categoryId) => {
                   try {
                     await fetchJson(`/api/clips/${clipId}`, {

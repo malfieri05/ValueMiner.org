@@ -40,8 +40,8 @@ export default function Home() {
             className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-violet-500 to-sky-400 px-6 py-3 text-base font-semibold text-slate-900 shadow-lg shadow-violet-500/30 transition hover:scale-[1.02]"
           >
             Get Started Free
-          </a>
-          <a
+        </a>
+        <a
             href="/dashboard"
             className="inline-flex items-center justify-center rounded-full border border-white/20 px-6 py-3 text-base font-semibold text-white transition hover:border-sky-300"
           >
@@ -65,7 +65,7 @@ export default function Home() {
               Customize a reminder schedule to keep relevant new information at front of mind.
             </p>
           </div>
-        </div>
+    </div>
       </section>
     </main>
   );
