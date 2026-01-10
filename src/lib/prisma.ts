@@ -3,10 +3,13 @@ import { PrismaClient } from "@prisma/client";
 // Ensure we always target the app schema in Postgres, even if the env var omits it.
 const ensureAppSchema = (url?: string) => {
   if (!url) return url;
+  // Trim accidental whitespace from env values
+  const trimmed = url.trim();
+  if (!trimmed) return trimmed;
   // If a schema is already provided, leave it alone.
-  if (/[\?&]schema=/i.test(url)) return url;
-  const separator = url.includes("?") ? "&" : "?";
-  return `${url}${separator}schema=app`;
+  if (/[\?&]schema=/i.test(trimmed)) return trimmed;
+  const separator = trimmed.includes("?") ? "&" : "?";
+  return `${trimmed}${separator}schema=app`;
 };
 
 const databaseUrl = ensureAppSchema(process.env.DATABASE_URL);
