@@ -6,16 +6,17 @@ const normalizeDatabaseUrl = (url?: string) => {
   let current = url.trim();
   if (!current) return current;
 
-  // If someone left a pooled port (6543), force direct port 5432 to avoid connectivity issues.
-  current = current.replace(":6543/", ":5432/");
-
   // If a schema is already provided, leave it alone. Otherwise append schema=app.
-  if (/[\?&]schema=/i.test(current)) return current;
-  const separator = current.includes("?") ? "&" : "?";
-  return `${current}${separator}schema=app`;
+  if (!/[\?&]schema=/i.test(current)) {
+    const separator = current.includes("?") ? "&" : "?";
+    current = `${current}${separator}schema=app`;
+  }
+  return current;
 };
 
-const databaseUrl = normalizeDatabaseUrl(process.env.DATABASE_URL);
+// Prefer an explicit pooled URL if provided, otherwise use DATABASE_URL.
+const rawUrl = process.env.DATABASE_POOL_URL || process.env.DATABASE_URL;
+const databaseUrl = normalizeDatabaseUrl(rawUrl);
 
 const globalForPrisma = global as unknown as {
   prisma: PrismaClient | undefined;
