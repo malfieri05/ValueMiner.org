@@ -63,7 +63,8 @@ export async function POST(request: Request) {
     return response;
   } catch (error) {
     console.error("Signup error", error);
-    return NextResponse.json({ error: "Signup failed" }, { status: 500 });
+    const message = error instanceof Error ? error.message : "Signup failed";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
 
