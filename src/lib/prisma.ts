@@ -1,18 +1,21 @@
 import { PrismaClient } from "@prisma/client";
 
 // Ensure we always target the app schema in Postgres, even if the env var omits it.
-const ensureAppSchema = (url?: string) => {
+const normalizeDatabaseUrl = (url?: string) => {
   if (!url) return url;
-  // Trim accidental whitespace from env values
-  const trimmed = url.trim();
-  if (!trimmed) return trimmed;
-  // If a schema is already provided, leave it alone.
-  if (/[\?&]schema=/i.test(trimmed)) return trimmed;
-  const separator = trimmed.includes("?") ? "&" : "?";
-  return `${trimmed}${separator}schema=app`;
+  let current = url.trim();
+  if (!current) return current;
+
+  // If someone left a pooled port (6543), force direct port 5432 to avoid connectivity issues.
+  current = current.replace(":6543/", ":5432/");
+
+  // If a schema is already provided, leave it alone. Otherwise append schema=app.
+  if (/[\?&]schema=/i.test(current)) return current;
+  const separator = current.includes("?") ? "&" : "?";
+  return `${current}${separator}schema=app`;
 };
 
-const databaseUrl = ensureAppSchema(process.env.DATABASE_URL);
+const databaseUrl = normalizeDatabaseUrl(process.env.DATABASE_URL);
 
 const globalForPrisma = global as unknown as {
   prisma: PrismaClient | undefined;
